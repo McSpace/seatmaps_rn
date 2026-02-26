@@ -42,7 +42,7 @@ import type {
 
 const API_URL = 'https://sandbox.quicket.io/api/v1/flight/features/plane/seatmap';
 const API_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6ImFmZjZlYjVlLTFjODMtNGU1Yy1hMmEyLXNlYXRtYXBzLWNvbSIsImlhdCI6MTc3MjAxOTcwMiwiZXhwIjoxNzcyMTA2MTAyfQ.dTGNjMbF101yL_Vv5SY_0CgX83rf5GQxxKyUlK4KDyM';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6ImFmZjZlYjVlLTFjODMtNGU1Yy1hMmEyLXNlYXRtYXBzLWNvbSIsImlhdCI6MTc3MjEwODMwNSwiZXhwIjoxNzcyMTk0NzA1fQ.oUlx37RqUrbmUSRcmJ64aSDDFOuegYKJb2lox9O9smA';
 
 const FLIGHT_REQUEST = {
   flight: {

@@ -38,6 +38,8 @@ availability) {
   const storageRef = useRef(new JetsStorageService());
   const apiRef = useRef(null);
   const preparerRef = useRef(new JetsContentPreparer());
+  // Tracks whether the first effect has completed initialization (async storage.init)
+  const initializedRef = useRef(false);
 
   // seatLabel → passenger for readOnly checks and pre-population
   const passengersByLabel = useMemo(() => {
@@ -61,12 +63,17 @@ availability) {
     const lang = JetsDataHelper.validateLanguage(mergedConfig.lang);
     mergedConfig.lang = lang;
     apiRef.current = new JetsApiService(config.appId, config.apiKey, config.apiUrl, storageRef.current);
-    storageRef.current.init().then(() => fetchData());
+    storageRef.current.init().then(() => {
+      initializedRef.current = true;
+      fetchData();
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.appId, config.apiKey, config.apiUrl]);
 
-  // Re-fetch when flight id or availability changes
+  // Re-fetch when flight id or availability changes (skip the initial mount —
+  // the first effect already calls fetchData after storage initialises)
   useEffect(() => {
+    if (!initializedRef.current) return;
     if (!apiRef.current) return;
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps

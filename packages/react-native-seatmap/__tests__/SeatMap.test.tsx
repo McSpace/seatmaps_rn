@@ -53,12 +53,11 @@ beforeEach(() => {
 });
 
 describe('SeatMap', () => {
-  it('renders loading indicator initially', () => {
-    const { getByTestId } = render(
-      <SeatMap flight={FLIGHT} {...CONFIG} testID="seatmap" />
-    );
-    // ActivityIndicator is rendered while loading
-    expect(getByTestId('seatmap')).toBeTruthy();
+  it('renders without crashing', () => {
+    // useSeatMap initialises with loading=false, so the initial render shows
+    // the "no data" state synchronously while the async fetch is pending.
+    const { getByText } = render(<SeatMap flight={FLIGHT} {...CONFIG} />);
+    expect(getByText('No seat data available.')).toBeTruthy();
   });
 
   it('renders "no data" message when content is empty', async () => {

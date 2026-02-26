@@ -340,10 +340,23 @@ export class JetsContentPreparer {
   private _prepareSeat = (seat: any, row: any, cabinFeatures: any, config: any): any => {
     const { number, classCode, name: rowName, seatType: _rowSeatType } = row;
     const prepared = this._prepareSeatFeatures(seat, cabinFeatures, config.lang);
-    const classType = CLASS_CODE_MAP[classCode.toLowerCase()] || '';
+    const classType =
+      (config.customCabinTitles?.[classCode] ?? config.customCabinTitles?.[classCode?.toUpperCase()]) ||
+      CLASS_CODE_MAP[classCode.toLowerCase()] || '';
     const seatNumber = number + (seat?.letter || '');
     const type = ENTITY_TYPE_MAP.seat;
-    const status = ENTITY_STATUS_MAP.available;
+
+    // Use status from API data when present; fall back to available.
+    // If an availability map is provided (built from the availability prop), apply it.
+    let status: string = seat.status || ENTITY_STATUS_MAP.available;
+    if (config.availabilityMap) {
+      if (seatNumber in config.availabilityMap) {
+        status = config.availabilityMap[seatNumber]
+          ? ENTITY_STATUS_MAP.available
+          : ENTITY_STATUS_MAP.unavailable;
+      }
+    }
+
     const seatType = seat.seatType || _rowSeatType;
     const seatClassAndType = `${classCode}-${seatType}`;
 

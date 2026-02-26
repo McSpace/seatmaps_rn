@@ -1,15 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import {
   View,
   ActivityIndicator,
   Text,
   StyleSheet,
   ViewStyle,
+  ScrollView,
 } from 'react-native';
 import { Deck } from './Deck';
 import { DeckSelector } from './DeckSelector';
 import { Tooltip } from './Tooltip';
-import type { SeatMapConfig, SeatMapCallbacks, PreparedSeat, Passenger } from '../types';
+import type {
+  SeatMapConfig,
+  SeatMapCallbacks,
+  SeatMapRef,
+  PreparedSeat,
+  Passenger,
+  SeatAvailability,
+  IFlight,
+} from '../types';
 import { useSeatMap } from '../hooks/useSeatMap';
 import {
   DEFAULT_LANG,
@@ -18,10 +34,18 @@ import {
 } from '../core/constants';
 
 export interface SeatMapProps extends SeatMapConfig, SeatMapCallbacks {
-  /** Flight identifier used to fetch seat data */
-  flightId: string;
+  /** Flight data used to fetch seatmap from the API */
+  flight: IFlight;
   /** Width of the seatmap component in pixels */
   width?: number;
+  /** Passengers list; pre-assigned seats are auto-selected */
+  passengers?: Passenger[];
+  /** Availability data; overrides seat statuses */
+  availability?: SeatAvailability[];
+  /** Controlled deck index; synced to internal state */
+  currentDeckIndex?: number;
+  /** Open tooltip for this seat label and scroll to it */
+  openedTooltipSeatLabel?: string;
   style?: ViewStyle;
 }
 
@@ -30,28 +54,47 @@ export interface SeatMapProps extends SeatMapConfig, SeatMapCallbacks {
  *
  * Usage:
  * ```tsx
+ * const ref = useRef<SeatMapRef>(null);
+ *
  * <SeatMap
- *   flightId="UA123"
+ *   ref={ref}
+ *   flight={{ id: 'UA123' }}
  *   apiUrl="https://api.example.com"
  *   appId="my-app"
  *   apiKey="my-key"
  *   width={350}
  *   lang="EN"
- *   onSeatPress={(seat) => console.log('Selected:', seat.number)}
+ *   onSeatSelected={(seat) => console.log('Selected:', seat.number)}
+ *   onSeatMapInited={() => console.log('Ready')}
  * />
  * ```
  */
-export const SeatMap: React.FC<SeatMapProps> = ({
-  flightId,
-  width = DEFAULT_SEAT_MAP_WIDTH,
-  lang = DEFAULT_LANG,
-  style,
-  onSeatPress,
-  onSeatDeselect,
-  onDeckChange,
-  ...config
-}) => {
+export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
+  {
+    flight,
+    width = DEFAULT_SEAT_MAP_WIDTH,
+    lang = DEFAULT_LANG,
+    style,
+    passengers,
+    availability,
+    currentDeckIndex,
+    openedTooltipSeatLabel,
+    // callbacks
+    onSeatMapInited,
+    onSeatSelected,
+    onSeatUnselected,
+    onLayoutUpdated,
+    onTooltipRequested,
+    onAvailabilityApplied,
+    onDeckChange,
+    onSeatPress,
+    onSeatDeselect,
+    ...config
+  },
+  ref,
+) => {
   const [tooltipSeat, setTooltipSeat] = useState<PreparedSeat | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {
     data,
@@ -62,24 +105,80 @@ export const SeatMap: React.FC<SeatMapProps> = ({
     setActiveDeckIndex,
     toggleSeat,
   } = useSeatMap(
-    flightId,
+    flight,
     { ...config, width, lang },
     {
+      onSeatMapInited,
+      onSeatSelected,
+      onSeatUnselected,
+      onAvailabilityApplied,
+      onDeckChange,
       onSeatPress,
       onSeatDeselect,
-      onDeckChange,
-    }
+    },
+    passengers,
+    availability,
   );
+
+  // Sync external currentDeckIndex → internal state
+  useEffect(() => {
+    if (currentDeckIndex !== undefined && currentDeckIndex !== activeDeckIndex) {
+      setActiveDeckIndex(currentDeckIndex);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDeckIndex]);
+
+  // Handle openedTooltipSeatLabel: scroll + open tooltip
+  useEffect(() => {
+    if (!openedTooltipSeatLabel || !data) return;
+    const deck = data.content[activeDeckIndex];
+    if (!deck) return;
+    for (const row of deck.rows) {
+      const seat = row.seats.find(
+        s => s.type === 'seat' && s.number === openedTooltipSeatLabel,
+      );
+      if (seat) {
+        const scale = data.params.scale;
+        scrollViewRef.current?.scrollTo({ y: row.topOffset * scale, animated: true });
+        setTooltipSeat(seat);
+        onTooltipRequested?.(seat);
+        break;
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openedTooltipSeatLabel]);
+
+  // Expose imperative handle
+  useImperativeHandle(ref, () => ({
+    seatJumpTo: (seatLabel: string) => {
+      if (!data) return;
+      const deck = data.content[activeDeckIndex];
+      if (!deck) return;
+      for (const row of deck.rows) {
+        const seat = row.seats.find(
+          s => s.type === 'seat' && s.number === seatLabel,
+        );
+        if (seat) {
+          const scale = data.params.scale;
+          scrollViewRef.current?.scrollTo({ y: row.topOffset * scale, animated: true });
+          setTooltipSeat(seat);
+          onTooltipRequested?.(seat);
+          break;
+        }
+      }
+    },
+  }), [data, activeDeckIndex, onTooltipRequested]);
 
   const handleSeatPress = useCallback(
     (seat: PreparedSeat) => {
       if (config.builtInTooltip !== false) {
         setTooltipSeat(seat);
+        onTooltipRequested?.(seat);
       } else {
         toggleSeat(seat);
       }
     },
-    [config.builtInTooltip, toggleSeat]
+    [config.builtInTooltip, toggleSeat, onTooltipRequested]
   );
 
   const handleTooltipSelect = useCallback(
@@ -127,8 +226,14 @@ export const SeatMap: React.FC<SeatMapProps> = ({
   const scale = params.scale;
 
   return (
-    <View style={[styles.container, { width, backgroundColor: THEME_BACKGROUND_COLOR }, style]}>
-      {/* Deck selector — shown when there are multiple decks */}
+    <View
+      style={[styles.container, { width, backgroundColor: THEME_BACKGROUND_COLOR }, style]}
+      onLayout={e => {
+        const { width: w, height: h } = e.nativeEvent.layout;
+        onLayoutUpdated?.({ width: w, height: h });
+      }}
+    >
+      {/* Deck selector */}
       {config.builtInDeckSelector !== false && decks.length > 1 && (
         <DeckSelector
           decks={decks}
@@ -145,6 +250,7 @@ export const SeatMap: React.FC<SeatMapProps> = ({
           scale={scale}
           selectedSeats={selectedSeats}
           onSeatPress={handleSeatPress}
+          scrollViewRef={scrollViewRef}
         />
       )}
 
@@ -162,7 +268,9 @@ export const SeatMap: React.FC<SeatMapProps> = ({
       )}
     </View>
   );
-};
+});
+
+SeatMap.displayName = 'SeatMap';
 
 const styles = StyleSheet.create({
   container: {

@@ -71,6 +71,15 @@ export const Seat: React.FC<SeatProps> = ({ seat, scale = 1, isSelected, onPress
         >
           {String(number || letter || '')}
         </Text>
+        {!!seat.price && H > 30 && (
+          <Text
+            style={[styles.price, { fontSize: Math.max(7, 8 * scale) }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {seat.price}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -81,6 +90,12 @@ const styles = StyleSheet.create({
     color: THEME_SEAT_LABEL_COLOR,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  price: {
+    color: THEME_SEAT_LABEL_COLOR,
+    fontWeight: '500',
+    textAlign: 'center',
+    opacity: 0.85,
   },
   labelContainer: {
     justifyContent: 'center',

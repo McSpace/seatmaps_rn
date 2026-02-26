@@ -1,4 +1,4 @@
-import type { SeatMapConfig, PreparedData, PreparedSeat, Passenger } from '../types';
+import type { SeatMapConfig, SeatMapCallbacks, PreparedData, PreparedSeat, Passenger, SeatAvailability, IFlight } from '../types';
 export interface UseSeatMapState {
     /** Prepared seatmap content */
     data: PreparedData | null;
@@ -20,10 +20,10 @@ export interface UseSeatMapState {
     refresh: () => void;
 }
 export declare function useSeatMap(
-/** Flight identifier (passed to the API endpoint) */
-flightId: string, config: SeatMapConfig, callbacks?: {
-    onSeatPress?: (seat: PreparedSeat, passenger?: Passenger) => void;
-    onSeatDeselect?: (seat: PreparedSeat) => void;
-    onDeckChange?: (deckIndex: number) => void;
-}): UseSeatMapState;
+/** Flight object used to fetch seatmap data */
+flight: IFlight, config: SeatMapConfig, callbacks?: SeatMapCallbacks, 
+/** Optional list of passengers; pre-assigned seats are auto-selected */
+passengers?: Passenger[], 
+/** Optional availability list; overrides seat statuses from the API */
+availability?: SeatAvailability[]): UseSeatMapState;
 //# sourceMappingURL=useSeatMap.d.ts.map

@@ -15,6 +15,7 @@ export type { UseSeatMapState } from './hooks/useSeatMap';
 export type {
   SeatMapConfig,
   SeatMapCallbacks,
+  SeatMapRef,
   PreparedData,
   PreparedDeck,
   PreparedRow,
@@ -27,6 +28,9 @@ export type {
   WingsInfo,
   SeatMapParams,
   Passenger,
+  PassengerSeat,
+  SeatAvailability,
+  IFlight,
   ColorTheme,
 } from './types';
 

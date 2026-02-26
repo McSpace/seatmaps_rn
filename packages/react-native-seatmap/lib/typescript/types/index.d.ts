@@ -100,12 +100,48 @@ export interface PreparedData {
     exits: unknown[][];
     bulks: unknown[][];
 }
+/** Seat pre-assigned to a passenger */
+export interface PassengerSeat {
+    price: number;
+    seatLabel: string;
+}
+/** Passenger record passed to the seat map */
 export interface Passenger {
+    readonly id: string;
+    /** Pre-assigned seat, if any */
+    seat?: PassengerSeat;
+    /** Passenger type code: 'ADT' | 'CHD' | 'INF' */
+    passengerType?: string;
+    /** Display label shown on the seat (e.g. passenger name initial) */
+    passengerLabel?: string;
+    /** Color used to highlight the passenger's seat */
+    passengerColor?: string;
+    /** When true, the pre-assigned seat cannot be unselected */
+    readOnly?: boolean;
+}
+/** Single seat availability record */
+export interface SeatAvailability {
+    /** Seat label matching PreparedSeat.number, e.g. "12A" */
+    seatLabel: string;
+    /** Whether this seat is available for selection */
+    available: boolean;
+}
+/** Flight information used to fetch seatmap data from the API */
+export interface IFlight {
+    /** Unique flight identifier used to build the API endpoint */
     id: string;
-    /** Passenger type: 'ADT' | 'CHD' | 'INF' */
-    type: string;
-    /** Display name */
-    name?: string;
+    /** IATA airline code, e.g. "UA" */
+    airlineIata?: string;
+    /** Flight number, e.g. "123" */
+    flightNumber?: string;
+    /** Cabin class code, e.g. "E", "B", "F" */
+    cabinCode?: string;
+    /** Origin airport IATA code */
+    origin?: string;
+    /** Destination airport IATA code */
+    destination?: string;
+    /** Flight departure date (ISO string) */
+    departureDate?: string;
 }
 export interface ColorTheme {
     fuselageStrokeWidth?: number;
@@ -130,6 +166,8 @@ export interface SeatMapConfig {
     width?: number;
     /** Language code (e.g., 'EN', 'RU', 'DE') */
     lang?: string;
+    /** Measurement units */
+    units?: 'metric' | 'imperials';
     /** Show horizontal layout */
     horizontal?: boolean;
     /** Right-to-left direction */
@@ -140,6 +178,8 @@ export interface SeatMapConfig {
     visibleWings?: boolean;
     /** Show cabin class titles */
     visibleCabinTitles?: boolean;
+    /** Custom cabin class title overrides, e.g. { F: 'First', B: 'Business' } */
+    customCabinTitles?: Record<string, string>;
     /** Show built-in seat tooltip */
     builtInTooltip?: boolean;
     /** Show tooltip on hover (vs. on tap) */
@@ -160,11 +200,35 @@ export interface SeatMapConfig {
     passengerTypes?: string[];
 }
 export interface SeatMapCallbacks {
-    /** Called when a seat is tapped */
-    onSeatPress?: (seat: PreparedSeat, passenger?: Passenger) => void;
-    /** Called when the selected seat is tapped again (deselect) */
-    onSeatDeselect?: (seat: PreparedSeat) => void;
+    /** Called when the seatmap has fully initialised (data loaded and rendered) */
+    onSeatMapInited?: () => void;
+    /** Called when a seat is selected */
+    onSeatSelected?: (seat: PreparedSeat, passenger?: Passenger) => void;
+    /** Called when a seat is unselected */
+    onSeatUnselected?: (seat: PreparedSeat) => void;
+    /** Called when the layout dimensions change */
+    onLayoutUpdated?: (layout: {
+        width: number;
+        height: number;
+    }) => void;
+    /** Called when a tooltip is about to be shown for a seat */
+    onTooltipRequested?: (seat: PreparedSeat) => void;
+    /** Called after availability data has been applied; receives count of available seats */
+    onAvailabilityApplied?: (availableCount: number) => void;
     /** Called when the active deck changes */
     onDeckChange?: (deckIndex: number) => void;
+    /**
+     * @deprecated Use onSeatSelected
+     */
+    onSeatPress?: (seat: PreparedSeat, passenger?: Passenger) => void;
+    /**
+     * @deprecated Use onSeatUnselected
+     */
+    onSeatDeselect?: (seat: PreparedSeat) => void;
+}
+/** Imperative handle exposed via forwardRef on SeatMap */
+export interface SeatMapRef {
+    /** Scroll to the seat with the given label and open its tooltip */
+    seatJumpTo: (seatLabel: string) => void;
 }
 //# sourceMappingURL=index.d.ts.map

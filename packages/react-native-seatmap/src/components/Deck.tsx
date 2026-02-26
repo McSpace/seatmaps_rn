@@ -36,6 +36,8 @@ interface DeckProps {
   scale?: number;
   selectedSeats?: Record<string, PreparedSeat>;
   onSeatPress?: (seat: PreparedSeat) => void;
+  /** Ref forwarded to the inner ScrollView for programmatic scrolling */
+  scrollViewRef?: React.RefObject<ScrollView | null>;
 }
 
 export const Deck: React.FC<DeckProps> = ({
@@ -45,6 +47,7 @@ export const Deck: React.FC<DeckProps> = ({
   scale = 1,
   selectedSeats = {},
   onSeatPress,
+  scrollViewRef,
 }) => {
   const deckContentWidth = deck.width * scale;
   const totalWidth = deckContentWidth;
@@ -53,6 +56,7 @@ export const Deck: React.FC<DeckProps> = ({
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       style={{ width: totalWidth }}
       showsVerticalScrollIndicator={false}
     >

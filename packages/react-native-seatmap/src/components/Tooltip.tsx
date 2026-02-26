@@ -133,7 +133,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
               style={styles.featuresList}
               showsVerticalScrollIndicator={false}
             >
-              {seat.features.slice(0, 8).map(f => (
+              {seat.features.slice(0, 12).map(f => (
                 <Text key={f.uniqId} style={styles.featureItem}>
                   · {f.value}
                 </Text>

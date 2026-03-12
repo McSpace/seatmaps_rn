@@ -47,7 +47,7 @@ class JetsDataHelper {
   }
   getDeckInnerWidthWithWings(deck, isWingsExist, config) {
     const wingsSpace = config?.visibleWings && isWingsExist ? config.colorTheme.wingsWidth : 0;
-    const cabinTitlesSpace = config?.visibleCabinTitles ? config.colorTheme.cabinTitlesWidth : 0;
+    const cabinTitlesSpace = config?.visibleCabinTitles ? config.colorTheme?.cabinTitlesWidth ?? _constants.THEME_CABIN_TITLES_WIDTH : 0;
     return deck.width + Math.max(wingsSpace, cabinTitlesSpace) * 2;
   }
   findWidestDeckRow = rows => {

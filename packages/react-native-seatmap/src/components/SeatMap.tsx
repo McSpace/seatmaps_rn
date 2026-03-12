@@ -32,6 +32,7 @@ import {
   DEFAULT_SEAT_MAP_WIDTH,
   THEME_BACKGROUND_COLOR,
 } from '../core/constants';
+import { getNoseAspectRatio } from '../core/nose-templates';
 
 export interface SeatMapProps extends SeatMapConfig, SeatMapCallbacks {
   /** Flight data used to fetch seatmap from the API */
@@ -139,7 +140,8 @@ export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
       );
       if (seat) {
         const scale = data.params.scale;
-        scrollViewRef.current?.scrollTo({ y: row.topOffset * scale, animated: true });
+        const noseOffset = data.params.visibleFuselage ? width * getNoseAspectRatio(data.params.noseType ?? 'default') : 0;
+        scrollViewRef.current?.scrollTo({ y: noseOffset + row.topOffset * scale, animated: true });
         setTooltipSeat(seat);
         onTooltipRequested?.(seat);
         break;
@@ -160,7 +162,8 @@ export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
         );
         if (seat) {
           const scale = data.params.scale;
-          scrollViewRef.current?.scrollTo({ y: row.topOffset * scale, animated: true });
+          const noseOffset = data.params.visibleFuselage ? width * getNoseAspectRatio(data.params.noseType ?? 'default') : 0;
+          scrollViewRef.current?.scrollTo({ y: noseOffset + row.topOffset * scale, animated: true });
           setTooltipSeat(seat);
           onTooltipRequested?.(seat);
           break;
@@ -247,10 +250,15 @@ export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
       {activeDeck && (
         <Deck
           deck={activeDeck}
+          exits={(data.exits?.[activeDeckIndex] as any[]) ?? []}
+          bulks={(data.bulks?.[activeDeckIndex] as any[]) ?? []}
           scale={scale}
           selectedSeats={selectedSeats}
           onSeatPress={handleSeatPress}
           scrollViewRef={scrollViewRef}
+          visibleFuselage={params.visibleFuselage}
+          visibleCabinTitles={params.visibleCabinTitles}
+          noseType={params.noseType}
         />
       )}
 

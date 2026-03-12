@@ -56,6 +56,10 @@ You can also run it in the iOS Simulator or Android Emulator if you have them se
 | Callback log | Bottom of the screen — all events in real time |
 | Multi-deck | DeckSelector appears automatically for aircraft with two decks |
 | Tooltip with details | Tap any seat |
+| Fuselage (nose + tail) | Rounded SVG cap at top and bottom of the cabin |
+| Cabin class titles | Colored strips on the sides labelled "Economy", "Business", etc. |
+| Emergency exits | Red arrow markers in the lateral margin at each exit row |
+| Galley / lavatory icons | Overhead-view shapes with amenity sticker icons (coffee, fish, restroom) |
 
 ---
 
@@ -119,9 +123,9 @@ export default function BookingScreen() {
 | `units` | `'metric' \| 'imperials'` | — | Unit system |
 | `horizontal` | `boolean` | `false` | Horizontal layout mode |
 | `rightToLeft` | `boolean` | `false` | Right-to-left direction |
-| `visibleFuselage` | `boolean` | `true` | Show fuselage outline |
+| `visibleFuselage` | `boolean` | `false` | Show fuselage outline |
 | `visibleWings` | `boolean` | `false` | Show wings |
-| `visibleCabinTitles` | `boolean` | `true` | Show cabin class titles |
+| `visibleCabinTitles` | `boolean` | `false` | Show cabin class titles |
 | `customCabinTitles` | `Record<string, string>` | — | Override class names: `{ F: 'First', B: 'Business' }` |
 | `builtInTooltip` | `boolean` | `true` | Show built-in tooltip on seat tap |
 | `builtInDeckSelector` | `boolean` | `true` | Show built-in deck selector |
@@ -290,5 +294,9 @@ The sandbox API (quicket.io) uses a `POST` request with a body — an incompatib
 
 For that reason the demo performs its own `fetch()` and passes the prepared data
 directly into the lower-level `<Deck>` and `<Tooltip>` components.
+
+When using `<Deck>` directly, `exits` and `bulks` must be passed per-deck from
+`PreparedData.exits[i]` and `PreparedData.bulks[i]` — they are separate from the
+deck object itself.
 
 If your backend follows the standard GET scheme, use `<SeatMap>` directly.

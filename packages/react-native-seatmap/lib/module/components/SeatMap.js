@@ -7,6 +7,7 @@ import { DeckSelector } from './DeckSelector';
 import { Tooltip } from './Tooltip';
 import { useSeatMap } from '../hooks/useSeatMap';
 import { DEFAULT_LANG, DEFAULT_SEAT_MAP_WIDTH, THEME_BACKGROUND_COLOR } from '../core/constants';
+import { getNoseAspectRatio } from '../core/nose-templates';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
  * Top-level SeatMap component.
@@ -90,8 +91,9 @@ export const SeatMap = /*#__PURE__*/forwardRef(({
       const seat = row.seats.find(s => s.type === 'seat' && s.number === openedTooltipSeatLabel);
       if (seat) {
         const scale = data.params.scale;
+        const noseOffset = data.params.visibleFuselage ? width * getNoseAspectRatio(data.params.noseType ?? 'default') : 0;
         scrollViewRef.current?.scrollTo({
-          y: row.topOffset * scale,
+          y: noseOffset + row.topOffset * scale,
           animated: true
         });
         setTooltipSeat(seat);
@@ -112,8 +114,9 @@ export const SeatMap = /*#__PURE__*/forwardRef(({
         const seat = row.seats.find(s => s.type === 'seat' && s.number === seatLabel);
         if (seat) {
           const scale = data.params.scale;
+          const noseOffset = data.params.visibleFuselage ? width * getNoseAspectRatio(data.params.noseType ?? 'default') : 0;
           scrollViewRef.current?.scrollTo({
-            y: row.topOffset * scale,
+            y: noseOffset + row.topOffset * scale,
             animated: true
           });
           setTooltipSeat(seat);
@@ -199,10 +202,15 @@ export const SeatMap = /*#__PURE__*/forwardRef(({
       lang: lang
     }), activeDeck && /*#__PURE__*/_jsx(Deck, {
       deck: activeDeck,
+      exits: data.exits?.[activeDeckIndex] ?? [],
+      bulks: data.bulks?.[activeDeckIndex] ?? [],
       scale: scale,
       selectedSeats: selectedSeats,
       onSeatPress: handleSeatPress,
-      scrollViewRef: scrollViewRef
+      scrollViewRef: scrollViewRef,
+      visibleFuselage: params.visibleFuselage,
+      visibleCabinTitles: params.visibleCabinTitles,
+      noseType: params.noseType
     }), config.builtInTooltip !== false && /*#__PURE__*/_jsx(Tooltip, {
       seat: tooltipSeat,
       visible: !!tooltipSeat,

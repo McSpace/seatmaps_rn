@@ -1,6 +1,6 @@
 "use strict";
 
-import { DEFAULT_DECK_PADDING_SIZE, THEME_FUSELAGE_OUTLINE_WIDTH, FUSELAGE_HEIGHT_TO_WIDTH_RATIO, ENTITY_TYPE_MAP, SCALE_TYPES, DEFAULT_LANG, LOCALES_MAP } from './constants';
+import { DEFAULT_DECK_PADDING_SIZE, THEME_FUSELAGE_OUTLINE_WIDTH, FUSELAGE_HEIGHT_TO_WIDTH_RATIO, THEME_CABIN_TITLES_WIDTH, ENTITY_TYPE_MAP, SCALE_TYPES, DEFAULT_LANG, LOCALES_MAP } from './constants';
 export class JetsDataHelper {
   getSeatMapParams = (decks, config, plane) => {
     const decksWidths = decks.map(deck => deck.width);
@@ -43,7 +43,7 @@ export class JetsDataHelper {
   }
   getDeckInnerWidthWithWings(deck, isWingsExist, config) {
     const wingsSpace = config?.visibleWings && isWingsExist ? config.colorTheme.wingsWidth : 0;
-    const cabinTitlesSpace = config?.visibleCabinTitles ? config.colorTheme.cabinTitlesWidth : 0;
+    const cabinTitlesSpace = config?.visibleCabinTitles ? config.colorTheme?.cabinTitlesWidth ?? THEME_CABIN_TITLES_WIDTH : 0;
     return deck.width + Math.max(wingsSpace, cabinTitlesSpace) * 2;
   }
   findWidestDeckRow = rows => {

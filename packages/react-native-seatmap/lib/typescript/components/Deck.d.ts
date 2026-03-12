@@ -13,6 +13,7 @@ interface BulkData {
     topOffset: number;
     width: number;
     height: number;
+    iconType?: string;
 }
 interface DeckProps {
     deck: PreparedDeck;
@@ -23,6 +24,12 @@ interface DeckProps {
     onSeatPress?: (seat: PreparedSeat) => void;
     /** Ref forwarded to the inner ScrollView for programmatic scrolling */
     scrollViewRef?: React.RefObject<ScrollView | null>;
+    /** Show nose/tail SVG fuselage caps */
+    visibleFuselage?: boolean;
+    /** Show cabin class title strips on the sides */
+    visibleCabinTitles?: boolean;
+    /** Aircraft nose type key, e.g. 'B787', 'A320' (falls back to 'default') */
+    noseType?: string;
 }
 export declare const Deck: React.FC<DeckProps>;
 export {};

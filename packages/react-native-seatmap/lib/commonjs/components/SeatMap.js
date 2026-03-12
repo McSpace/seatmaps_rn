@@ -11,6 +11,7 @@ var _DeckSelector = require("./DeckSelector");
 var _Tooltip = require("./Tooltip");
 var _useSeatMap = require("../hooks/useSeatMap");
 var _constants = require("../core/constants");
+var _noseTemplates = require("../core/nose-templates");
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 /**
@@ -95,8 +96,9 @@ const SeatMap = exports.SeatMap = /*#__PURE__*/(0, _react.forwardRef)(({
       const seat = row.seats.find(s => s.type === 'seat' && s.number === openedTooltipSeatLabel);
       if (seat) {
         const scale = data.params.scale;
+        const noseOffset = data.params.visibleFuselage ? width * (0, _noseTemplates.getNoseAspectRatio)(data.params.noseType ?? 'default') : 0;
         scrollViewRef.current?.scrollTo({
-          y: row.topOffset * scale,
+          y: noseOffset + row.topOffset * scale,
           animated: true
         });
         setTooltipSeat(seat);
@@ -117,8 +119,9 @@ const SeatMap = exports.SeatMap = /*#__PURE__*/(0, _react.forwardRef)(({
         const seat = row.seats.find(s => s.type === 'seat' && s.number === seatLabel);
         if (seat) {
           const scale = data.params.scale;
+          const noseOffset = data.params.visibleFuselage ? width * (0, _noseTemplates.getNoseAspectRatio)(data.params.noseType ?? 'default') : 0;
           scrollViewRef.current?.scrollTo({
-            y: row.topOffset * scale,
+            y: noseOffset + row.topOffset * scale,
             animated: true
           });
           setTooltipSeat(seat);
@@ -204,10 +207,15 @@ const SeatMap = exports.SeatMap = /*#__PURE__*/(0, _react.forwardRef)(({
       lang: lang
     }), activeDeck && /*#__PURE__*/(0, _jsxRuntime.jsx)(_Deck.Deck, {
       deck: activeDeck,
+      exits: data.exits?.[activeDeckIndex] ?? [],
+      bulks: data.bulks?.[activeDeckIndex] ?? [],
       scale: scale,
       selectedSeats: selectedSeats,
       onSeatPress: handleSeatPress,
-      scrollViewRef: scrollViewRef
+      scrollViewRef: scrollViewRef,
+      visibleFuselage: params.visibleFuselage,
+      visibleCabinTitles: params.visibleCabinTitles,
+      noseType: params.noseType
     }), config.builtInTooltip !== false && /*#__PURE__*/(0, _jsxRuntime.jsx)(_Tooltip.Tooltip, {
       seat: tooltipSeat,
       visible: !!tooltipSeat,

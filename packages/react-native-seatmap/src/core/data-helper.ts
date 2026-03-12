@@ -2,6 +2,7 @@ import {
   DEFAULT_DECK_PADDING_SIZE,
   THEME_FUSELAGE_OUTLINE_WIDTH,
   FUSELAGE_HEIGHT_TO_WIDTH_RATIO,
+  THEME_CABIN_TITLES_WIDTH,
   ENTITY_TYPE_MAP,
   SCALE_TYPES,
   DEFAULT_LANG,
@@ -114,7 +115,7 @@ export class JetsDataHelper {
     const wingsSpace =
       config?.visibleWings && isWingsExist ? config.colorTheme.wingsWidth : 0;
     const cabinTitlesSpace = config?.visibleCabinTitles
-      ? config.colorTheme.cabinTitlesWidth
+      ? (config.colorTheme?.cabinTitlesWidth ?? THEME_CABIN_TITLES_WIDTH)
       : 0;
 
     return deck.width + Math.max(wingsSpace, cabinTitlesSpace) * 2;

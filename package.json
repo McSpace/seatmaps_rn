@@ -5,6 +5,10 @@
     "packages/*",
     "apps/*"
   ],
+  "overrides": {
+    "react": "19.1.0",
+    "react-test-renderer": "19.1.0"
+  },
   "scripts": {
     "demo": "npm run start --workspace=apps/demo",
     "build": "npm run build --workspace=packages/react-native-seatmap",

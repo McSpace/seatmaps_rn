@@ -254,7 +254,7 @@ export const THEME_DECK_SELECTOR_FILL_COLOR = '#fff';
 export const THEME_DECK_SELECTOR_STROKE_COLOR = 'rgba(50, 50, 50, 0.5)';
 export const THEME_DECK_SELECTOR_SIZE = 25;
 
-export const THEME_CABIN_TITLES_WIDTH = 80;
+export const THEME_CABIN_TITLES_WIDTH = 60;
 export const THEME_CABIN_TITLES_LABEL_COLOR = '#00BFFF';
 export const THEME_CABIN_TITLES_HIGHLIGHT_COLORS: Record<string, string> = {
   F: '#BDB76B',

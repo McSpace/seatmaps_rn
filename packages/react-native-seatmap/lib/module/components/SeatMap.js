@@ -58,6 +58,7 @@ export const SeatMap = /*#__PURE__*/forwardRef(({
     error,
     activeDeckIndex,
     selectedSeats,
+    passengersByLabel,
     setActiveDeckIndex,
     toggleSeat
   } = useSeatMap(flight, {
@@ -206,6 +207,7 @@ export const SeatMap = /*#__PURE__*/forwardRef(({
       bulks: data.bulks?.[activeDeckIndex] ?? [],
       scale: scale,
       selectedSeats: selectedSeats,
+      passengersByLabel: passengersByLabel,
       onSeatPress: handleSeatPress,
       scrollViewRef: scrollViewRef,
       visibleFuselage: params.visibleFuselage,

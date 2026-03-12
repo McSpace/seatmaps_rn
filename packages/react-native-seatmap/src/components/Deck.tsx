@@ -16,9 +16,7 @@ import {
   THEME_FUSELAGE_OUTLINE_COLOR,
   THEME_CABIN_TITLES_WIDTH,
 } from '../core/constants';
-import type { PreparedDeck, PreparedSeat } from '../types';
-
-const HEADER_COLOR = 'rgba(180, 210, 240, 0.9)';
+import type { PreparedDeck, PreparedSeat, Passenger } from '../types';
 
 // Bulk scaling coefficients — matches JetsBulk.js in the web lib
 const DEFAULT_SCALE_BULK_COEFF = 0.7;
@@ -61,6 +59,8 @@ interface DeckProps {
   visibleCabinTitles?: boolean;
   /** Aircraft nose type key, e.g. 'B787', 'A320' (falls back to 'default') */
   noseType?: string;
+  /** Map of seatLabel → Passenger for badge rendering */
+  passengersByLabel?: Record<string, Passenger>;
 }
 
 const _deckLogged = new Set<string>();
@@ -76,11 +76,11 @@ export const Deck: React.FC<DeckProps> = ({
   visibleFuselage = false,
   visibleCabinTitles = false,
   noseType = 'default',
+  passengersByLabel,
 }) => {
   const deckContentWidth = deck.width * scale;
   const totalWidth = deckContentWidth;
   const totalHeight = deck.height * scale;
-  const firstRow = deck.rows[0];
 
   // Compute the horizontal offset so rows are centered within the deck width
   const maxRowWidth = deck.rows.length > 0 ? Math.max(...deck.rows.map(r => r.width)) : 0;
@@ -201,43 +201,6 @@ export const Deck: React.FC<DeckProps> = ({
             height: totalHeight,
           }}
         >
-          {/* Letter header — derived from first row */}
-          {firstRow && (
-            <View
-              style={{
-                position: 'absolute',
-                top: Math.max(0, (firstRow.topOffset - 50) * scale),
-                left: contentOffset,
-                flexDirection: 'row',
-                alignItems: 'flex-end',
-                height: 20 * scale,
-              }}
-            >
-              {firstRow.seats.map(seat => (
-                <View
-                  key={`hdr-${seat.uniqId}`}
-                  style={{
-                    width: (seat.size.width + 2) * scale,
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                  }}
-                >
-                  {seat.type === 'seat' && (
-                    <Text
-                      style={{
-                        fontSize: 9 * scale,
-                        color: HEADER_COLOR,
-                        fontWeight: '600',
-                      }}
-                    >
-                      {seat.letter}
-                    </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-
           {/* Rows — rendered first (web lib z-order: rows → exits → bulks) */}
           {deck.rows.map(row => {
             const rowLeft = (deckContentWidth - row.width * scale) / 2;
@@ -261,6 +224,7 @@ export const Deck: React.FC<DeckProps> = ({
                   isSelected={!!selectedSeats[seat.uniqId]}
                   onPress={onSeatPress}
                   style={{ marginTop: (seat.topOffset ?? 0) * scale }}
+                  passenger={seat.type === 'seat' ? passengersByLabel?.[seat.number] : undefined}
                 />
               ))}
             </View>

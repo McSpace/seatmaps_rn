@@ -16,8 +16,6 @@ var _stickerTemplates = require("../core/sticker-templates");
 var _constants = require("../core/constants");
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-const HEADER_COLOR = 'rgba(180, 210, 240, 0.9)';
-
 // Bulk scaling coefficients — matches JetsBulk.js in the web lib
 const DEFAULT_SCALE_BULK_COEFF = 0.7;
 const SCALE_TO_BULK_COEFF_MAP = {
@@ -38,12 +36,12 @@ const Deck = ({
   scrollViewRef,
   visibleFuselage = false,
   visibleCabinTitles = false,
-  noseType = 'default'
+  noseType = 'default',
+  passengersByLabel
 }) => {
   const deckContentWidth = deck.width * scale;
   const totalWidth = deckContentWidth;
   const totalHeight = deck.height * scale;
-  const firstRow = deck.rows[0];
 
   // Compute the horizontal offset so rows are centered within the deck width
   const maxRowWidth = deck.rows.length > 0 ? Math.max(...deck.rows.map(r => r.width)) : 0;
@@ -145,31 +143,7 @@ const Deck = ({
           width: deckContentWidth,
           height: totalHeight
         },
-        children: [firstRow && /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, {
-          style: {
-            position: 'absolute',
-            top: Math.max(0, (firstRow.topOffset - 50) * scale),
-            left: contentOffset,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-            height: 20 * scale
-          },
-          children: firstRow.seats.map(seat => /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, {
-            style: {
-              width: (seat.size.width + 2) * scale,
-              alignItems: 'center',
-              justifyContent: 'flex-end'
-            },
-            children: seat.type === 'seat' && /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.Text, {
-              style: {
-                fontSize: 9 * scale,
-                color: HEADER_COLOR,
-                fontWeight: '600'
-              },
-              children: seat.letter
-            })
-          }, `hdr-${seat.uniqId}`))
-        }), deck.rows.map(row => {
+        children: [deck.rows.map(row => {
           const rowLeft = (deckContentWidth - row.width * scale) / 2;
           return /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, {
             style: {
@@ -187,7 +161,8 @@ const Deck = ({
               onPress: onSeatPress,
               style: {
                 marginTop: (seat.topOffset ?? 0) * scale
-              }
+              },
+              passenger: seat.type === 'seat' ? passengersByLabel?.[seat.number] : undefined
             }, seat.uniqId))
           }, row.uniqId);
         }), exits.map(exit => {

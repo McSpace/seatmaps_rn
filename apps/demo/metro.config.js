@@ -15,4 +15,14 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Block Metro from resolving through workspace package node_modules so that
+// singleton modules (react, react-native) are always sourced from the app's
+// dependency tree, not from devDependency trees of library packages.
+config.resolver.blockList = [
+  new RegExp(
+    path.resolve(workspaceRoot, 'packages').replace(/\\/g, '\\\\') +
+      '/[^/]+/node_modules/.*'
+  ),
+];
+
 module.exports = config;

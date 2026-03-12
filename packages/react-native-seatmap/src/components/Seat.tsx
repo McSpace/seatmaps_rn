@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, ViewStyle } from 'react-native';
-import type { PreparedSeat } from '../types';
+import type { PreparedSeat, Passenger } from '../types';
 import { SeatIcon } from './SeatIcon';
 import {
   THEME_SEAT_LABEL_COLOR,
@@ -14,6 +14,7 @@ interface SeatProps {
   isSelected?: boolean;
   onPress?: (seat: PreparedSeat) => void;
   style?: ViewStyle;
+  passenger?: Passenger;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -108,12 +109,12 @@ function getLabelZone(seatType?: string): LabelZone {
     return { topFrac: 0.05, heightFrac: 0.48, leftFrac: 0, rightFrac: 0, fontMult: 0.20 };
   }
   // Economy / premium economy: back at ~0–64%
-  return { topFrac: 0.02, heightFrac: 0.50, leftFrac: 0, rightFrac: 0, fontMult: 0.38 };
+  return { topFrac: 0.18, heightFrac: 0.50, leftFrac: 0, rightFrac: 0, fontMult: 0.28 };
 }
 
 const _loggedTypes = new Set<string>();
 
-export const Seat: React.FC<SeatProps> = ({ seat, scale = 1, isSelected, onPress, style }) => {
+export const Seat: React.FC<SeatProps> = ({ seat, scale = 1, isSelected, onPress, style, passenger }) => {
   const { type, status, size, letter, number, color, seatType } = seat;
 
   // DEBUG: log unique seatType values with their dimensions
@@ -186,6 +187,28 @@ export const Seat: React.FC<SeatProps> = ({ seat, scale = 1, isSelected, onPress
           </Text>
         )}
       </View>
+      {!!passenger && (
+        <View
+          style={{
+            position: 'absolute',
+            top: (H - W * 0.8) / 2,
+            left: (W - W * 0.8) / 2,
+            width: W * 0.8,
+            height: W * 0.8,
+            borderRadius: W * 0.4,
+            backgroundColor: '#1157ce',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{ color: '#ffffff', fontSize: W * 0.3, fontWeight: '600', textAlign: 'center' }}
+            numberOfLines={1}
+          >
+            {passenger.passengerLabel || 'P'}
+          </Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -193,7 +216,7 @@ export const Seat: React.FC<SeatProps> = ({ seat, scale = 1, isSelected, onPress
 const styles = StyleSheet.create({
   label: {
     color: THEME_SEAT_LABEL_COLOR,
-    fontWeight: '700',
+    fontWeight: '400',
     textAlign: 'center',
   },
   price: {

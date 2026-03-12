@@ -98,7 +98,7 @@ export declare const THEME_TOOLTIP_CANCEL_BUTTON_BACKGROUND_COLOR = "rgb(237, 24
 export declare const THEME_DECK_SELECTOR_FILL_COLOR = "#fff";
 export declare const THEME_DECK_SELECTOR_STROKE_COLOR = "rgba(50, 50, 50, 0.5)";
 export declare const THEME_DECK_SELECTOR_SIZE = 25;
-export declare const THEME_CABIN_TITLES_WIDTH = 80;
+export declare const THEME_CABIN_TITLES_WIDTH = 60;
 export declare const THEME_CABIN_TITLES_LABEL_COLOR = "#00BFFF";
 export declare const THEME_CABIN_TITLES_HIGHLIGHT_COLORS: Record<string, string>;
 //# sourceMappingURL=constants.d.ts.map

@@ -1,7 +1,7 @@
 "use strict";
 
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Seat } from './Seat';
 import { CabinTitle } from './CabinTitle';
@@ -11,8 +11,6 @@ import { getBulkSvg } from '../core/bulk-templates';
 import { getStickerSvg } from '../core/sticker-templates';
 import { THEME_BULK_BASE_COLOR, THEME_BULK_CUT_COLOR, THEME_BULK_ICON_COLOR, THEME_FLOOR_COLOR, THEME_FUSELAGE_OUTLINE_WIDTH, THEME_FUSELAGE_OUTLINE_COLOR, THEME_CABIN_TITLES_WIDTH } from '../core/constants';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-const HEADER_COLOR = 'rgba(180, 210, 240, 0.9)';
-
 // Bulk scaling coefficients — matches JetsBulk.js in the web lib
 const DEFAULT_SCALE_BULK_COEFF = 0.7;
 const SCALE_TO_BULK_COEFF_MAP = {
@@ -33,12 +31,12 @@ export const Deck = ({
   scrollViewRef,
   visibleFuselage = false,
   visibleCabinTitles = false,
-  noseType = 'default'
+  noseType = 'default',
+  passengersByLabel
 }) => {
   const deckContentWidth = deck.width * scale;
   const totalWidth = deckContentWidth;
   const totalHeight = deck.height * scale;
-  const firstRow = deck.rows[0];
 
   // Compute the horizontal offset so rows are centered within the deck width
   const maxRowWidth = deck.rows.length > 0 ? Math.max(...deck.rows.map(r => r.width)) : 0;
@@ -140,31 +138,7 @@ export const Deck = ({
           width: deckContentWidth,
           height: totalHeight
         },
-        children: [firstRow && /*#__PURE__*/_jsx(View, {
-          style: {
-            position: 'absolute',
-            top: Math.max(0, (firstRow.topOffset - 50) * scale),
-            left: contentOffset,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-            height: 20 * scale
-          },
-          children: firstRow.seats.map(seat => /*#__PURE__*/_jsx(View, {
-            style: {
-              width: (seat.size.width + 2) * scale,
-              alignItems: 'center',
-              justifyContent: 'flex-end'
-            },
-            children: seat.type === 'seat' && /*#__PURE__*/_jsx(Text, {
-              style: {
-                fontSize: 9 * scale,
-                color: HEADER_COLOR,
-                fontWeight: '600'
-              },
-              children: seat.letter
-            })
-          }, `hdr-${seat.uniqId}`))
-        }), deck.rows.map(row => {
+        children: [deck.rows.map(row => {
           const rowLeft = (deckContentWidth - row.width * scale) / 2;
           return /*#__PURE__*/_jsx(View, {
             style: {
@@ -182,7 +156,8 @@ export const Deck = ({
               onPress: onSeatPress,
               style: {
                 marginTop: (seat.topOffset ?? 0) * scale
-              }
+              },
+              passenger: seat.type === 'seat' ? passengersByLabel?.[seat.number] : undefined
             }, seat.uniqId))
           }, row.uniqId);
         }), exits.map(exit => {

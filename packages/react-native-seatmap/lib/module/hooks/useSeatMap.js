@@ -162,6 +162,7 @@ availability) {
     data,
     activeDeckIndex,
     selectedSeats,
+    passengersByLabel,
     loading,
     error,
     setActiveDeckIndex,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import type { PreparedDeck, PreparedSeat } from '../types';
+import type { PreparedDeck, PreparedSeat, Passenger } from '../types';
 interface ExitData {
     uniqId: string;
     type: 'left' | 'right';
@@ -30,6 +30,8 @@ interface DeckProps {
     visibleCabinTitles?: boolean;
     /** Aircraft nose type key, e.g. 'B787', 'A320' (falls back to 'default') */
     noseType?: string;
+    /** Map of seatLabel → Passenger for badge rendering */
+    passengersByLabel?: Record<string, Passenger>;
 }
 export declare const Deck: React.FC<DeckProps>;
 export {};

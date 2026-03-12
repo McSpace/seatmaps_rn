@@ -103,6 +103,7 @@ export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
     error,
     activeDeckIndex,
     selectedSeats,
+    passengersByLabel,
     setActiveDeckIndex,
     toggleSeat,
   } = useSeatMap(
@@ -254,6 +255,7 @@ export const SeatMap = forwardRef<SeatMapRef, SeatMapProps>((
           bulks={(data.bulks?.[activeDeckIndex] as any[]) ?? []}
           scale={scale}
           selectedSeats={selectedSeats}
+          passengersByLabel={passengersByLabel}
           onSeatPress={handleSeatPress}
           scrollViewRef={scrollViewRef}
           visibleFuselage={params.visibleFuselage}

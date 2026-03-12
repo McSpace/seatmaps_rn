@@ -172,11 +172,11 @@ function getLabelZone(seatType) {
   }
   // Economy / premium economy: back at ~0–64%
   return {
-    topFrac: 0.02,
+    topFrac: 0.18,
     heightFrac: 0.50,
     leftFrac: 0,
     rightFrac: 0,
-    fontMult: 0.38
+    fontMult: 0.28
   };
 }
 const _loggedTypes = new Set();
@@ -185,7 +185,8 @@ const Seat = ({
   scale = 1,
   isSelected,
   onPress,
-  style
+  style,
+  passenger
 }) => {
   const {
     type,
@@ -275,6 +276,28 @@ const Seat = ({
         adjustsFontSizeToFit: true,
         children: seat.price
       })]
+    }), !!passenger && /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, {
+      style: {
+        position: 'absolute',
+        top: (H - W * 0.8) / 2,
+        left: (W - W * 0.8) / 2,
+        width: W * 0.8,
+        height: W * 0.8,
+        borderRadius: W * 0.4,
+        backgroundColor: '#1157ce',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.Text, {
+        style: {
+          color: '#ffffff',
+          fontSize: W * 0.3,
+          fontWeight: '600',
+          textAlign: 'center'
+        },
+        numberOfLines: 1,
+        children: passenger.passengerLabel || 'P'
+      })
     })]
   });
 };
@@ -282,7 +305,7 @@ exports.Seat = Seat;
 const styles = _reactNative.StyleSheet.create({
   label: {
     color: _constants.THEME_SEAT_LABEL_COLOR,
-    fontWeight: '700',
+    fontWeight: '400',
     textAlign: 'center'
   },
   price: {

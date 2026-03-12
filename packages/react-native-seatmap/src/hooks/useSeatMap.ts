@@ -33,6 +33,8 @@ export interface UseSeatMapState {
   activeDeckIndex: number;
   /** Seats currently selected, keyed by seat uniqId */
   selectedSeats: Record<string, PreparedSeat>;
+  /** Map of seatLabel → Passenger for badge rendering */
+  passengersByLabel: Record<string, Passenger>;
   /** Whether data is being loaded */
   loading: boolean;
   /** Error message if the last fetch failed */
@@ -225,6 +227,7 @@ export function useSeatMap(
     data,
     activeDeckIndex,
     selectedSeats,
+    passengersByLabel,
     loading,
     error,
     setActiveDeckIndex,

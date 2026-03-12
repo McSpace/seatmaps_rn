@@ -40,3 +40,4 @@ task/
 # generated native folders
 /ios
 /android
+plan/

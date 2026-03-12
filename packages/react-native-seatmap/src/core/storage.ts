@@ -25,10 +25,10 @@ export class JetsStorageService {
   async init(): Promise<void> {
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const items = await AsyncStorage.multiGet(keys);
       const now = Date.now();
 
-      for (const [key, raw] of items) {
+      for (const key of keys) {
+        const raw = await AsyncStorage.getItem(key);
         if (!raw) continue;
         try {
           const parsed: StorageEntry = JSON.parse(raw);

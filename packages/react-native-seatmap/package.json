@@ -54,7 +54,13 @@
     "testMatch": ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}"],
     "transformIgnorePatterns": [
       "node_modules/(?!(react-native|@react-native|react-native-svg|@seatmaps.com)/)"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^react$": "<rootDir>/node_modules/react",
+      "^react/jsx-runtime$": "<rootDir>/node_modules/react/jsx-runtime",
+      "^react-test-renderer$": "<rootDir>/../../node_modules/react-test-renderer",
+      "^react-test-renderer/(.*)$": "<rootDir>/../../node_modules/react-test-renderer/$1"
+    }
   },
   "react-native-builder-bob": {
     "source": "src",
